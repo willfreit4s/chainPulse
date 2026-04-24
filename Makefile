@@ -22,7 +22,7 @@ sqlc:
 # =========================
 
 proto:
-	buf generate
+	buf dep update && buf generate
 
 proto-format:
 	buf format -w
