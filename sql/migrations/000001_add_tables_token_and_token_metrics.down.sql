@@ -1,0 +1,6 @@
+BEGIN;
+
+DROP TABLE IF EXISTS token_metrics;
+DROP TABLE IF EXISTS tokens;
+
+COMMIT;
