@@ -17,7 +17,10 @@ type conf struct {
 	MinConn int
 
 	// Server configuration
-	ServerPort int
+	ServerPort     int
+	ServiceName    string
+	Environment    string
+	ServiceVersion int
 }
 
 func LoadConfig() (*conf, error) {
@@ -32,6 +35,9 @@ func LoadConfig() (*conf, error) {
 	v.SetDefault("MAX_CONN", 60)
 	v.SetDefault("MIN_CONN", 20)
 	v.SetDefault("SERVER_PORT", 8000)
+	v.SetDefault("SERVICE_NAME", "chainpulse-api")
+	v.SetDefault("SERVICE_VERSION", "1.0.0")
+	v.SetDefault("ENVIRONMENT", "local")
 
 	v.AutomaticEnv()
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
@@ -42,14 +48,17 @@ func LoadConfig() (*conf, error) {
 	// if err := v.ReadInConfig(); err != nil {}
 
 	cfg := &conf{
-		DBHost:     v.GetString("DB_HOST"),
-		DBPort:     v.GetInt("DB_PORT"),
-		DBUser:     v.GetString("DB_USER"),
-		DBPass:     v.GetString("DB_PASS"),
-		DBName:     v.GetString("DB_NAME"),
-		MaxConn:    v.GetInt("MAX_CONN"),
-		MinConn:    v.GetInt("MIN_CONN"),
-		ServerPort: v.GetInt("SERVER_PORT"),
+		DBHost:         v.GetString("DB_HOST"),
+		DBPort:         v.GetInt("DB_PORT"),
+		DBUser:         v.GetString("DB_USER"),
+		DBPass:         v.GetString("DB_PASS"),
+		DBName:         v.GetString("DB_NAME"),
+		MaxConn:        v.GetInt("MAX_CONN"),
+		MinConn:        v.GetInt("MIN_CONN"),
+		ServerPort:     v.GetInt("SERVER_PORT"),
+		ServiceName:    v.GetString("SERVICE_NAME"),
+		ServiceVersion: v.GetInt("SERVICE_VERSION"),
+		Environment:    v.GetString("ENVIRONMENT"),
 	}
 
 	return cfg, nil
