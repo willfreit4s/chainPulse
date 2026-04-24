@@ -7,12 +7,6 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "internal/pb/token/v1;tokenv1";
 
-// enum Chain {
-//   ETHEREUM = 1;
-//   BINANCE_SMART_CHAIN = 2;
-//   POLYGON = 3;
-// }
-
 // Token represents a cryptocurrency token with its associated metadata and metrics.
 message Token {
   string id = 1;
