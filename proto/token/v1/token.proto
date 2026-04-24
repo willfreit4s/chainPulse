@@ -53,8 +53,8 @@ message ListTokensResponse {
 
 // TokenService defines the gRPC service for managing and retrieving token information and metrics.
 service TokenService {
-  // GetToken retrieves a token by its unique identifier.
-  rpc GetToken(GetTokenRequest) returns (Token) {
+  // GetTokenById retrieves a token by its unique identifier.
+  rpc GetTokenById(GetTokenRequest) returns (Token) {
     option (google.api.http) = {get: "/v1/tokens/{id}"};
   }
 
