@@ -23,6 +23,8 @@ type conf struct {
 	ServiceVersion int
 }
 
+type Config = conf
+
 func LoadConfig() (*conf, error) {
 	v := viper.New()
 
@@ -44,8 +46,6 @@ func LoadConfig() (*conf, error) {
 
 	v.SetConfigFile(".env")
 	v.SetConfigType("env")
-
-	// if err := v.ReadInConfig(); err != nil {}
 
 	cfg := &conf{
 		DBHost:         v.GetString("DB_HOST"),
