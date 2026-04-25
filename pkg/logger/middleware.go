@@ -1,11 +1,14 @@
 package logger
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/google/uuid"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 )
 
@@ -27,13 +30,14 @@ func Middleware(base *Logger) func(http.Handler) http.Handler {
 				traceID = fmt.Sprintf("%d", span.Context().TraceID())
 			}
 
-			reqLogger := base.log.With().
+			reqZerolog := base.With().
 				Str("correlation_id", correlationID).
 				Str("trace_id", traceID).
 				Str("method", r.Method).
 				Str("path", r.URL.Path).
-				Dur("duration", time.Since(start)).
 				Logger()
+
+			reqLogger := &Logger{log: reqZerolog}
 
 			reqLogger.Info().Msg("request started")
 
@@ -47,8 +51,70 @@ func Middleware(base *Logger) func(http.Handler) http.Handler {
 
 			next.ServeHTTP(rr, r)
 
-			reqLogger.Info().Msg("request completed")
+			reqLogger.Info().
+				Int("status", rr.statusCode).
+				Dur("duration", time.Since(start)).
+				Msg("request completed")
 		})
+	}
+}
+
+// Create a file interceptor for gRPC
+func LoggerInterceptor(base *Logger) grpc.UnaryServerInterceptor {
+	return func(
+		ctx context.Context,
+		req interface{},
+		info *grpc.UnaryServerInfo,
+		handler grpc.UnaryHandler,
+	) (interface{}, error) {
+
+		start := time.Now()
+
+		var correlationID string
+		if md, ok := metadata.FromIncomingContext(ctx); ok {
+			if values := md.Get("x-correlation-id"); len(values) > 0 {
+				correlationID = values[0]
+			}
+		}
+
+		if correlationID == "" {
+			correlationID = uuid.New().String()
+		}
+
+		// datadog trace
+		span, _ := tracer.SpanFromContext(ctx)
+		traceID := ""
+		if span != nil {
+			traceID = fmt.Sprintf("%d", span.Context().TraceID())
+		}
+
+		reqZerolog := base.With().
+			Str("correlation_id", correlationID).
+			Str("trace_id", traceID).
+			Str("grpc_method", info.FullMethod).
+			Logger()
+
+		reqLogger := &Logger{log: reqZerolog}
+
+		ctx = WithLogger(ctx, reqLogger)
+		ctx = WithCorrelationID(ctx, correlationID)
+
+		reqLogger.Info().Msg("grpc request started")
+
+		resp, err := handler(ctx, req)
+
+		if err != nil {
+			reqLogger.Error().
+				Err(err).
+				Dur("duration", time.Since(start)).
+				Msg("grpc request failed")
+		} else {
+			reqLogger.Info().
+				Dur("duration", time.Since(start)).
+				Msg("grpc request completed")
+		}
+
+		return resp, err
 	}
 }
 
