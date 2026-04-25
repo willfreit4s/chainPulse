@@ -45,6 +45,10 @@ func New(cfg Config) *Logger {
 	return &Logger{log: logger}
 }
 
+func (l *Logger) With() zerolog.Context {
+	return l.log.With()
+}
+
 func (l *Logger) Info() *zerolog.Event {
 	return l.log.Info()
 }
