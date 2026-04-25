@@ -19,8 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	TokenService_GetToken_FullMethodName   = "/token.v1.TokenService/GetToken"
-	TokenService_ListTokens_FullMethodName = "/token.v1.TokenService/ListTokens"
+	TokenService_GetTokenById_FullMethodName = "/token.v1.TokenService/GetTokenById"
+	TokenService_ListTokens_FullMethodName   = "/token.v1.TokenService/ListTokens"
 )
 
 // TokenServiceClient is the client API for TokenService service.
@@ -29,8 +29,8 @@ const (
 //
 // TokenService defines the gRPC service for managing and retrieving token information and metrics.
 type TokenServiceClient interface {
-	// GetToken retrieves a token by its unique identifier.
-	GetToken(ctx context.Context, in *GetTokenRequest, opts ...grpc.CallOption) (*Token, error)
+	// GetTokenById retrieves a token by its unique identifier.
+	GetTokenById(ctx context.Context, in *GetTokenRequest, opts ...grpc.CallOption) (*Token, error)
 	// ListTokens retrieves a list of all tokens.
 	ListTokens(ctx context.Context, in *Blank, opts ...grpc.CallOption) (*ListTokensResponse, error)
 }
@@ -43,10 +43,10 @@ func NewTokenServiceClient(cc grpc.ClientConnInterface) TokenServiceClient {
 	return &tokenServiceClient{cc}
 }
 
-func (c *tokenServiceClient) GetToken(ctx context.Context, in *GetTokenRequest, opts ...grpc.CallOption) (*Token, error) {
+func (c *tokenServiceClient) GetTokenById(ctx context.Context, in *GetTokenRequest, opts ...grpc.CallOption) (*Token, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Token)
-	err := c.cc.Invoke(ctx, TokenService_GetToken_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, TokenService_GetTokenById_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -69,8 +69,8 @@ func (c *tokenServiceClient) ListTokens(ctx context.Context, in *Blank, opts ...
 //
 // TokenService defines the gRPC service for managing and retrieving token information and metrics.
 type TokenServiceServer interface {
-	// GetToken retrieves a token by its unique identifier.
-	GetToken(context.Context, *GetTokenRequest) (*Token, error)
+	// GetTokenById retrieves a token by its unique identifier.
+	GetTokenById(context.Context, *GetTokenRequest) (*Token, error)
 	// ListTokens retrieves a list of all tokens.
 	ListTokens(context.Context, *Blank) (*ListTokensResponse, error)
 	mustEmbedUnimplementedTokenServiceServer()
@@ -83,8 +83,8 @@ type TokenServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedTokenServiceServer struct{}
 
-func (UnimplementedTokenServiceServer) GetToken(context.Context, *GetTokenRequest) (*Token, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetToken not implemented")
+func (UnimplementedTokenServiceServer) GetTokenById(context.Context, *GetTokenRequest) (*Token, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetTokenById not implemented")
 }
 func (UnimplementedTokenServiceServer) ListTokens(context.Context, *Blank) (*ListTokensResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListTokens not implemented")
@@ -110,20 +110,20 @@ func RegisterTokenServiceServer(s grpc.ServiceRegistrar, srv TokenServiceServer)
 	s.RegisterService(&TokenService_ServiceDesc, srv)
 }
 
-func _TokenService_GetToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _TokenService_GetTokenById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetTokenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TokenServiceServer).GetToken(ctx, in)
+		return srv.(TokenServiceServer).GetTokenById(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: TokenService_GetToken_FullMethodName,
+		FullMethod: TokenService_GetTokenById_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TokenServiceServer).GetToken(ctx, req.(*GetTokenRequest))
+		return srv.(TokenServiceServer).GetTokenById(ctx, req.(*GetTokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -154,8 +154,8 @@ var TokenService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*TokenServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetToken",
-			Handler:    _TokenService_GetToken_Handler,
+			MethodName: "GetTokenById",
+			Handler:    _TokenService_GetTokenById_Handler,
 		},
 		{
 			MethodName: "ListTokens",

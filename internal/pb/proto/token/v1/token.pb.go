@@ -450,9 +450,9 @@ const file_proto_token_v1_token_proto_rawDesc = "" +
 	"\x0fGetTokenRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"=\n" +
 	"\x12ListTokensResponse\x12'\n" +
-	"\x06tokens\x18\x01 \x03(\v2\x0f.token.v1.TokenR\x06tokens2\xb0\x01\n" +
-	"\fTokenService\x12O\n" +
-	"\bGetToken\x12\x19.token.v1.GetTokenRequest\x1a\x0f.token.v1.Token\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/v1/tokens/{id}\x12O\n" +
+	"\x06tokens\x18\x01 \x03(\v2\x0f.token.v1.TokenR\x06tokens2\xb4\x01\n" +
+	"\fTokenService\x12S\n" +
+	"\fGetTokenById\x12\x19.token.v1.GetTokenRequest\x1a\x0f.token.v1.Token\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/v1/tokens/{id}\x12O\n" +
 	"\n" +
 	"ListTokens\x12\x0f.token.v1.Blank\x1a\x1c.token.v1.ListTokensResponse\"\x12\x82\xd3\xe4\x93\x02\f\x12\n" +
 	"/v1/tokensB\x1eZ\x1cinternal/pb/token/v1;tokenv1b\x06proto3"
@@ -485,9 +485,9 @@ var file_proto_token_v1_token_proto_depIdxs = []int32{
 	5, // 3: token.v1.TokenMetric.timestamp:type_name -> google.protobuf.Timestamp
 	5, // 4: token.v1.TokenMetric.deleted_at:type_name -> google.protobuf.Timestamp
 	0, // 5: token.v1.ListTokensResponse.tokens:type_name -> token.v1.Token
-	3, // 6: token.v1.TokenService.GetToken:input_type -> token.v1.GetTokenRequest
+	3, // 6: token.v1.TokenService.GetTokenById:input_type -> token.v1.GetTokenRequest
 	2, // 7: token.v1.TokenService.ListTokens:input_type -> token.v1.Blank
-	0, // 8: token.v1.TokenService.GetToken:output_type -> token.v1.Token
+	0, // 8: token.v1.TokenService.GetTokenById:output_type -> token.v1.Token
 	4, // 9: token.v1.TokenService.ListTokens:output_type -> token.v1.ListTokensResponse
 	8, // [8:10] is the sub-list for method output_type
 	6, // [6:8] is the sub-list for method input_type

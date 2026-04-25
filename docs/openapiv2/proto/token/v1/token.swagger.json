@@ -41,8 +41,8 @@
     },
     "/v1/tokens/{id}": {
       "get": {
-        "summary": "GetToken retrieves a token by its unique identifier.",
-        "operationId": "TokenService_GetToken",
+        "summary": "GetTokenById retrieves a token by its unique identifier.",
+        "operationId": "TokenService_GetTokenById",
         "responses": {
           "200": {
             "description": "A successful response.",
