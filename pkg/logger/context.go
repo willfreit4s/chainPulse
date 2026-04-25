@@ -2,8 +2,6 @@ package logger
 
 import (
 	"context"
-
-	"github.com/rs/zerolog"
 )
 
 type contextKey string
@@ -17,13 +15,13 @@ func WithCorrelationID(ctx context.Context, id string) context.Context {
 	return context.WithValue(ctx, correlationIDKey, id)
 }
 
-func WithLogger(ctx context.Context, log zerolog.Logger) context.Context {
+func WithLogger(ctx context.Context, log *Logger) context.Context {
 	return context.WithValue(ctx, loggerKey, log)
 }
 
-func FromContext(ctx context.Context) zerolog.Logger {
-	if l, ok := ctx.Value(loggerKey).(zerolog.Logger); ok {
+func FromContext(ctx context.Context) *Logger {
+	if l, ok := ctx.Value(loggerKey).(*Logger); ok {
 		return l
 	}
-	return zerolog.Nop()
+	return nil
 }
