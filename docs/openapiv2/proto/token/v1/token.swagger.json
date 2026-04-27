@@ -16,9 +16,32 @@
     "application/json"
   ],
   "paths": {
+    "/v1/health": {
+      "get": {
+        "summary": "HealthCheck is a simple endpoint to check if the service is running",
+        "operationId": "TokenService_HealthCheck",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1HealthCheckResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "TokenService"
+        ]
+      }
+    },
     "/v1/tokens": {
       "get": {
-        "summary": "ListTokens retrieves a list of all tokens.",
+        "summary": "ListTokens retrieves all tokens with pagination and filtering",
         "operationId": "TokenService_ListTokens",
         "responses": {
           "200": {
@@ -34,6 +57,52 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "chain",
+            "description": "Filter by chain (optional)",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "description": "Pagination limit (default: 50)",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "description": "Pagination offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "orderBy",
+            "description": "Order field (created_at, symbol, etc)",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "orderDirection",
+            "description": "asc or desc",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "description": "Search by name or symbol",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
         "tags": [
           "TokenService"
         ]
@@ -41,7 +110,7 @@
     },
     "/v1/tokens/{id}": {
       "get": {
-        "summary": "GetTokenById retrieves a token by its unique identifier.",
+        "summary": "GetToken retrieves a token by ID or address",
         "operationId": "TokenService_GetTokenById",
         "responses": {
           "200": {
@@ -100,6 +169,28 @@
         }
       }
     },
+    "v1HealthCheckResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "title": "\"ok\" or \"error\""
+        },
+        "version": {
+          "type": "string",
+          "title": "Service version"
+        },
+        "serviceName": {
+          "type": "string",
+          "title": "Name of the service"
+        },
+        "env": {
+          "type": "string",
+          "title": "Environment (production, staging, etc)"
+        }
+      },
+      "description": "HealthCheckResponse is a simple message to indicate service health status."
+    },
     "v1ListTokensResponse": {
       "type": "object",
       "properties": {
@@ -109,6 +200,18 @@
             "type": "object",
             "$ref": "#/definitions/v1Token"
           }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "offset": {
+          "type": "integer",
+          "format": "int32"
         }
       },
       "description": "ListTokensResponse is the response message containing a list of tokens."
@@ -117,27 +220,33 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "string"
+          "type": "string",
+          "title": "UUID"
         },
         "address": {
-          "type": "string"
+          "type": "string",
+          "title": "Contract address (0x...)"
         },
         "name": {
-          "type": "string"
+          "type": "string",
+          "title": "Token name"
         },
         "symbol": {
-          "type": "string"
+          "type": "string",
+          "title": "Token symbol (BTC, ETH, etc)"
         },
         "decimals": {
           "type": "integer",
-          "format": "int64"
+          "format": "int64",
+          "title": "Number of decimal places"
         },
         "totalSupply": {
-          "type": "number",
-          "format": "double"
+          "type": "string",
+          "title": "Total supply (string for big numbers)"
         },
         "chain": {
-          "type": "string"
+          "type": "string",
+          "title": "Blockchain (ethereum, bsc, polygon, etc)"
         },
         "createdAt": {
           "type": "string",
@@ -155,7 +264,7 @@
           "type": "boolean"
         }
       },
-      "description": "Token represents a cryptocurrency token with its associated metadata and metrics."
+      "title": "Token represents a cryptocurrency token with its metadata"
     }
   }
 }
