@@ -20,7 +20,7 @@ type conf struct {
 	ServerPort     int
 	ServiceName    string
 	Environment    string
-	ServiceVersion int
+	ServiceVersion string
 }
 
 type Config = conf
@@ -57,7 +57,7 @@ func LoadConfig() (*conf, error) {
 		MinConn:        v.GetInt("MIN_CONN"),
 		ServerPort:     v.GetInt("SERVER_PORT"),
 		ServiceName:    v.GetString("SERVICE_NAME"),
-		ServiceVersion: v.GetInt("SERVICE_VERSION"),
+		ServiceVersion: v.GetString("SERVICE_VERSION"),
 		Environment:    v.GetString("ENVIRONMENT"),
 	}
 
