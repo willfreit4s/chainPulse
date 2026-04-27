@@ -2,22 +2,22 @@ version: v1
 
 plugins:
   - plugin: go
-    out: internal/pb
+    out: internal/infra/grpc/pb
     opt: paths=source_relative
 
   - plugin: go-grpc
-    out: internal/pb
+    out: internal/infra/grpc/pb
     opt: paths=source_relative
 
   - plugin: grpc-gateway
-    out: internal/pb
+    out: internal/infra/grpc/pb
     opt: paths=source_relative
 
   - plugin: openapiv2
     out: docs/openapiv2
 
   - plugin: validate
-    out: internal/pb
+    out: internal/infra/grpc/pb
     opt:
       - lang=go
       - paths=source_relative
