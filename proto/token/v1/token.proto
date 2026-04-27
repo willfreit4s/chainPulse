@@ -4,42 +4,32 @@ package token.v1;
 
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
 
 option go_package = "internal/pb/token/v1;tokenv1";
 
-// Token represents a cryptocurrency token with its associated metadata and metrics.
+// Token represents a cryptocurrency token with its metadata
 message Token {
-  string id = 1;
-  string address = 2;
-  string name = 3;
-  string symbol = 4;
-  uint32 decimals = 5;
-  double total_supply = 6;
-  string chain = 7;
+  string id = 1;                                    // UUID
+  string address = 2;                               // Contract address (0x...)
+  string name = 3;                                  // Token name
+  string symbol = 4;                                // Token symbol (BTC, ETH, etc)
+  uint32 decimals = 5;                              // Number of decimal places
+  double total_supply = 6;                          // Total supply
+  string chain = 7;                                 // Blockchain (ethereum, bsc, polygon, etc)
   google.protobuf.Timestamp created_at = 8;
   google.protobuf.Timestamp updated_at = 9;
   google.protobuf.Timestamp deleted_at = 10;
   bool deleted = 11;
 }
 
-// TokenMetric represents the latest market metrics for a specific token.
-message TokenMetric {
-  string id = 1;
-  string token_id = 2;
-  string token_address = 3;
-  double price = 4;
-  double price_change_24h = 5;
-  double volume_24h = 6;
-  double market_cap = 7;
-  int64 holders = 8;
-  int64 transactions_24h = 9;
-  google.protobuf.Timestamp timestamp = 10;
-  google.protobuf.Timestamp deleted_at = 11;
-  bool deleted = 12;
+// HealthCheckResponse is a simple message to indicate service health status.
+message HealthCheckResponse {
+  string status = 1; // "ok" or "error"
+  string version = 2; // Service version
+  string service_name = 3; // Name of the service
+  string env = 4; // Environment (production, staging, etc)
 }
-
-// Blank message for requests that do not require any parameters.
-message Blank {}
 
 // GetTokenRequest is the request message for retrieving a token by its unique identifier.
 message GetTokenRequest {
@@ -49,17 +39,40 @@ message GetTokenRequest {
 // ListTokensResponse is the response message containing a list of tokens.
 message ListTokensResponse {
   repeated Token tokens = 1;
+  int32 total = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
+message ListTokensRequest {
+  string chain = 1;                                 // Filter by chain (optional)
+  int32 limit = 2;                                  // Pagination limit (default: 50)
+  int32 offset = 3;                                 // Pagination offset
+  string order_by = 4;                              // Order field (created_at, symbol, etc)
+  string order_direction = 5;                       // asc or desc
+  string search = 6;                                // Search by name or symbol
 }
 
 // TokenService defines the gRPC service for managing and retrieving token information and metrics.
 service TokenService {
-  // GetTokenById retrieves a token by its unique identifier.
-  rpc GetTokenById(GetTokenRequest) returns (Token) {
-    option (google.api.http) = {get: "/v1/tokens/{id}"};
+  // HealthCheck is a simple endpoint to check if the service is running
+  rpc HealthCheck(google.protobuf.Empty) returns (HealthCheckResponse) {
+    option (google.api.http) = {
+      get: "/v1/health"
+    };
   }
 
-  // ListTokens retrieves a list of all tokens.
-  rpc ListTokens(Blank) returns (ListTokensResponse) {
-    option (google.api.http) = {get: "/v1/tokens"};
+  // GetToken retrieves a token by ID or address
+  rpc GetTokenById(GetTokenRequest) returns (Token) {
+    option (google.api.http) = {
+      get: "/v1/tokens/{id}"
+    };
+  }
+
+  // ListTokens retrieves all tokens with pagination and filtering
+  rpc ListTokens(ListTokensRequest) returns (ListTokensResponse) {
+    option (google.api.http) = {
+      get: "/v1/tokens"
+    };
   }
 }
