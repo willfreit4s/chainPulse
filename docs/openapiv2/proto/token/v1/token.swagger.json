@@ -241,8 +241,9 @@
           "title": "Number of decimal places"
         },
         "totalSupply": {
-          "type": "string",
-          "title": "Total supply (string for big numbers)"
+          "type": "number",
+          "format": "double",
+          "title": "Total supply"
         },
         "chain": {
           "type": "string",

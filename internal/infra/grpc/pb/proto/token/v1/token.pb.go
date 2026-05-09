@@ -27,13 +27,13 @@ const (
 // Token represents a cryptocurrency token with its metadata
 type Token struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`                                      // UUID
-	Address       string                 `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`                            // Contract address (0x...)
-	Name          string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`                                  // Token name
-	Symbol        string                 `protobuf:"bytes,4,opt,name=symbol,proto3" json:"symbol,omitempty"`                              // Token symbol (BTC, ETH, etc)
-	Decimals      uint32                 `protobuf:"varint,5,opt,name=decimals,proto3" json:"decimals,omitempty"`                         // Number of decimal places
-	TotalSupply   string                 `protobuf:"bytes,6,opt,name=total_supply,json=totalSupply,proto3" json:"total_supply,omitempty"` // Total supply (string for big numbers)
-	Chain         string                 `protobuf:"bytes,7,opt,name=chain,proto3" json:"chain,omitempty"`                                // Blockchain (ethereum, bsc, polygon, etc)
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`                                        // UUID
+	Address       string                 `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`                              // Contract address (0x...)
+	Name          string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`                                    // Token name
+	Symbol        string                 `protobuf:"bytes,4,opt,name=symbol,proto3" json:"symbol,omitempty"`                                // Token symbol (BTC, ETH, etc)
+	Decimals      uint32                 `protobuf:"varint,5,opt,name=decimals,proto3" json:"decimals,omitempty"`                           // Number of decimal places
+	TotalSupply   float64                `protobuf:"fixed64,6,opt,name=total_supply,json=totalSupply,proto3" json:"total_supply,omitempty"` // Total supply
+	Chain         string                 `protobuf:"bytes,7,opt,name=chain,proto3" json:"chain,omitempty"`                                  // Blockchain (ethereum, bsc, polygon, etc)
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	DeletedAt     *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=deleted_at,json=deletedAt,proto3" json:"deleted_at,omitempty"`
@@ -107,11 +107,11 @@ func (x *Token) GetDecimals() uint32 {
 	return 0
 }
 
-func (x *Token) GetTotalSupply() string {
+func (x *Token) GetTotalSupply() float64 {
 	if x != nil {
 		return x.TotalSupply
 	}
-	return ""
+	return 0
 }
 
 func (x *Token) GetChain() string {
@@ -149,620 +149,6 @@ func (x *Token) GetDeleted() bool {
 	return false
 }
 
-// TokenMetric represents market metrics for a token at a specific time
-type TokenMetric struct {
-	state                 protoimpl.MessageState `protogen:"open.v1"`
-	Id                    string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`                                                                         // Metric ID
-	TokenId               string                 `protobuf:"bytes,2,opt,name=token_id,json=tokenId,proto3" json:"token_id,omitempty"`                                                // Foreign key to Token
-	TokenAddress          string                 `protobuf:"bytes,3,opt,name=token_address,json=tokenAddress,proto3" json:"token_address,omitempty"`                                 // Denormalized address
-	Chain                 string                 `protobuf:"bytes,4,opt,name=chain,proto3" json:"chain,omitempty"`                                                                   // Blockchain network
-	Price                 float64                `protobuf:"fixed64,5,opt,name=price,proto3" json:"price,omitempty"`                                                                 // Current price in USD
-	PriceChange_24H       float64                `protobuf:"fixed64,6,opt,name=price_change_24h,json=priceChange24h,proto3" json:"price_change_24h,omitempty"`                       // Price change % (24h)
-	PriceChange_7D        float64                `protobuf:"fixed64,7,opt,name=price_change_7d,json=priceChange7d,proto3" json:"price_change_7d,omitempty"`                          // Price change % (7d)
-	Volume_24H            float64                `protobuf:"fixed64,8,opt,name=volume_24h,json=volume24h,proto3" json:"volume_24h,omitempty"`                                        // Trading volume (24h)
-	MarketCap             float64                `protobuf:"fixed64,9,opt,name=market_cap,json=marketCap,proto3" json:"market_cap,omitempty"`                                        // Market capitalization
-	Holders               int64                  `protobuf:"varint,10,opt,name=holders,proto3" json:"holders,omitempty"`                                                             // Number of holders
-	Transactions_24H      int64                  `protobuf:"varint,11,opt,name=transactions_24h,json=transactions24h,proto3" json:"transactions_24h,omitempty"`                      // Transaction count (24h)
-	LiquidityUsd          float64                `protobuf:"fixed64,12,opt,name=liquidity_usd,json=liquidityUsd,proto3" json:"liquidity_usd,omitempty"`                              // Total liquidity in USD
-	FullyDilutedValuation float64                `protobuf:"fixed64,13,opt,name=fully_diluted_valuation,json=fullyDilutedValuation,proto3" json:"fully_diluted_valuation,omitempty"` // FDV
-	Timestamp             *timestamppb.Timestamp `protobuf:"bytes,14,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
-	DeletedAt             *timestamppb.Timestamp `protobuf:"bytes,15,opt,name=deleted_at,json=deletedAt,proto3" json:"deleted_at,omitempty"`
-	Deleted               bool                   `protobuf:"varint,16,opt,name=deleted,proto3" json:"deleted,omitempty"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
-}
-
-func (x *TokenMetric) Reset() {
-	*x = TokenMetric{}
-	mi := &file_proto_token_v1_token_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *TokenMetric) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*TokenMetric) ProtoMessage() {}
-
-func (x *TokenMetric) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_token_v1_token_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use TokenMetric.ProtoReflect.Descriptor instead.
-func (*TokenMetric) Descriptor() ([]byte, []int) {
-	return file_proto_token_v1_token_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *TokenMetric) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
-}
-
-func (x *TokenMetric) GetTokenId() string {
-	if x != nil {
-		return x.TokenId
-	}
-	return ""
-}
-
-func (x *TokenMetric) GetTokenAddress() string {
-	if x != nil {
-		return x.TokenAddress
-	}
-	return ""
-}
-
-func (x *TokenMetric) GetChain() string {
-	if x != nil {
-		return x.Chain
-	}
-	return ""
-}
-
-func (x *TokenMetric) GetPrice() float64 {
-	if x != nil {
-		return x.Price
-	}
-	return 0
-}
-
-func (x *TokenMetric) GetPriceChange_24H() float64 {
-	if x != nil {
-		return x.PriceChange_24H
-	}
-	return 0
-}
-
-func (x *TokenMetric) GetPriceChange_7D() float64 {
-	if x != nil {
-		return x.PriceChange_7D
-	}
-	return 0
-}
-
-func (x *TokenMetric) GetVolume_24H() float64 {
-	if x != nil {
-		return x.Volume_24H
-	}
-	return 0
-}
-
-func (x *TokenMetric) GetMarketCap() float64 {
-	if x != nil {
-		return x.MarketCap
-	}
-	return 0
-}
-
-func (x *TokenMetric) GetHolders() int64 {
-	if x != nil {
-		return x.Holders
-	}
-	return 0
-}
-
-func (x *TokenMetric) GetTransactions_24H() int64 {
-	if x != nil {
-		return x.Transactions_24H
-	}
-	return 0
-}
-
-func (x *TokenMetric) GetLiquidityUsd() float64 {
-	if x != nil {
-		return x.LiquidityUsd
-	}
-	return 0
-}
-
-func (x *TokenMetric) GetFullyDilutedValuation() float64 {
-	if x != nil {
-		return x.FullyDilutedValuation
-	}
-	return 0
-}
-
-func (x *TokenMetric) GetTimestamp() *timestamppb.Timestamp {
-	if x != nil {
-		return x.Timestamp
-	}
-	return nil
-}
-
-func (x *TokenMetric) GetDeletedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.DeletedAt
-	}
-	return nil
-}
-
-func (x *TokenMetric) GetDeleted() bool {
-	if x != nil {
-		return x.Deleted
-	}
-	return false
-}
-
-// PricePoint represents a single price data point in history
-type PricePoint struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Timestamp     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
-	Open          float64                `protobuf:"fixed64,2,opt,name=open,proto3" json:"open,omitempty"`
-	High          float64                `protobuf:"fixed64,3,opt,name=high,proto3" json:"high,omitempty"`
-	Low           float64                `protobuf:"fixed64,4,opt,name=low,proto3" json:"low,omitempty"`
-	Close         float64                `protobuf:"fixed64,5,opt,name=close,proto3" json:"close,omitempty"`
-	Volume        float64                `protobuf:"fixed64,6,opt,name=volume,proto3" json:"volume,omitempty"`
-	MarketCap     float64                `protobuf:"fixed64,7,opt,name=market_cap,json=marketCap,proto3" json:"market_cap,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *PricePoint) Reset() {
-	*x = PricePoint{}
-	mi := &file_proto_token_v1_token_proto_msgTypes[2]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *PricePoint) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*PricePoint) ProtoMessage() {}
-
-func (x *PricePoint) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_token_v1_token_proto_msgTypes[2]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use PricePoint.ProtoReflect.Descriptor instead.
-func (*PricePoint) Descriptor() ([]byte, []int) {
-	return file_proto_token_v1_token_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *PricePoint) GetTimestamp() *timestamppb.Timestamp {
-	if x != nil {
-		return x.Timestamp
-	}
-	return nil
-}
-
-func (x *PricePoint) GetOpen() float64 {
-	if x != nil {
-		return x.Open
-	}
-	return 0
-}
-
-func (x *PricePoint) GetHigh() float64 {
-	if x != nil {
-		return x.High
-	}
-	return 0
-}
-
-func (x *PricePoint) GetLow() float64 {
-	if x != nil {
-		return x.Low
-	}
-	return 0
-}
-
-func (x *PricePoint) GetClose() float64 {
-	if x != nil {
-		return x.Close
-	}
-	return 0
-}
-
-func (x *PricePoint) GetVolume() float64 {
-	if x != nil {
-		return x.Volume
-	}
-	return 0
-}
-
-func (x *PricePoint) GetMarketCap() float64 {
-	if x != nil {
-		return x.MarketCap
-	}
-	return 0
-}
-
-// Holder represents a token holder with their balance
-type Holder struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Address       string                 `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-	Balance       string                 `protobuf:"bytes,2,opt,name=balance,proto3" json:"balance,omitempty"`                          // Balance as string (big numbers)
-	Percentage    float64                `protobuf:"fixed64,3,opt,name=percentage,proto3" json:"percentage,omitempty"`                  // Percentage of total supply
-	Label         string                 `protobuf:"bytes,4,opt,name=label,proto3" json:"label,omitempty"`                              // Optional label (CEX, DEX, etc)
-	IsContract    bool                   `protobuf:"varint,5,opt,name=is_contract,json=isContract,proto3" json:"is_contract,omitempty"` // Whether address is a contract
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Holder) Reset() {
-	*x = Holder{}
-	mi := &file_proto_token_v1_token_proto_msgTypes[3]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Holder) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Holder) ProtoMessage() {}
-
-func (x *Holder) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_token_v1_token_proto_msgTypes[3]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Holder.ProtoReflect.Descriptor instead.
-func (*Holder) Descriptor() ([]byte, []int) {
-	return file_proto_token_v1_token_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *Holder) GetAddress() string {
-	if x != nil {
-		return x.Address
-	}
-	return ""
-}
-
-func (x *Holder) GetBalance() string {
-	if x != nil {
-		return x.Balance
-	}
-	return ""
-}
-
-func (x *Holder) GetPercentage() float64 {
-	if x != nil {
-		return x.Percentage
-	}
-	return 0
-}
-
-func (x *Holder) GetLabel() string {
-	if x != nil {
-		return x.Label
-	}
-	return ""
-}
-
-func (x *Holder) GetIsContract() bool {
-	if x != nil {
-		return x.IsContract
-	}
-	return false
-}
-
-// Transaction represents a token transaction
-type Transaction struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	Hash            string                 `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
-	From            string                 `protobuf:"bytes,2,opt,name=from,proto3" json:"from,omitempty"`
-	To              string                 `protobuf:"bytes,3,opt,name=to,proto3" json:"to,omitempty"`
-	Value           string                 `protobuf:"bytes,4,opt,name=value,proto3" json:"value,omitempty"` // Transaction amount
-	Timestamp       *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
-	BlockNumber     uint64                 `protobuf:"varint,6,opt,name=block_number,json=blockNumber,proto3" json:"block_number,omitempty"`
-	TransactionType string                 `protobuf:"bytes,7,opt,name=transaction_type,json=transactionType,proto3" json:"transaction_type,omitempty"` // transfer, swap, mint, burn
-	ValueUsd        float64                `protobuf:"fixed64,8,opt,name=value_usd,json=valueUsd,proto3" json:"value_usd,omitempty"`                    // USD value at time of tx
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
-}
-
-func (x *Transaction) Reset() {
-	*x = Transaction{}
-	mi := &file_proto_token_v1_token_proto_msgTypes[4]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Transaction) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Transaction) ProtoMessage() {}
-
-func (x *Transaction) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_token_v1_token_proto_msgTypes[4]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Transaction.ProtoReflect.Descriptor instead.
-func (*Transaction) Descriptor() ([]byte, []int) {
-	return file_proto_token_v1_token_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *Transaction) GetHash() string {
-	if x != nil {
-		return x.Hash
-	}
-	return ""
-}
-
-func (x *Transaction) GetFrom() string {
-	if x != nil {
-		return x.From
-	}
-	return ""
-}
-
-func (x *Transaction) GetTo() string {
-	if x != nil {
-		return x.To
-	}
-	return ""
-}
-
-func (x *Transaction) GetValue() string {
-	if x != nil {
-		return x.Value
-	}
-	return ""
-}
-
-func (x *Transaction) GetTimestamp() *timestamppb.Timestamp {
-	if x != nil {
-		return x.Timestamp
-	}
-	return nil
-}
-
-func (x *Transaction) GetBlockNumber() uint64 {
-	if x != nil {
-		return x.BlockNumber
-	}
-	return 0
-}
-
-func (x *Transaction) GetTransactionType() string {
-	if x != nil {
-		return x.TransactionType
-	}
-	return ""
-}
-
-func (x *Transaction) GetValueUsd() float64 {
-	if x != nil {
-		return x.ValueUsd
-	}
-	return 0
-}
-
-// TrendingToken represents a trending token with score
-type TrendingToken struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	Token          *Token                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
-	Metrics        *TokenMetric           `protobuf:"bytes,2,opt,name=metrics,proto3" json:"metrics,omitempty"`
-	TrendingScore  float64                `protobuf:"fixed64,3,opt,name=trending_score,json=trendingScore,proto3" json:"trending_score,omitempty"`  // Algorithm-based score
-	TrendingReason string                 `protobuf:"bytes,4,opt,name=trending_reason,json=trendingReason,proto3" json:"trending_reason,omitempty"` // Why it's trending
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
-}
-
-func (x *TrendingToken) Reset() {
-	*x = TrendingToken{}
-	mi := &file_proto_token_v1_token_proto_msgTypes[5]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *TrendingToken) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*TrendingToken) ProtoMessage() {}
-
-func (x *TrendingToken) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_token_v1_token_proto_msgTypes[5]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use TrendingToken.ProtoReflect.Descriptor instead.
-func (*TrendingToken) Descriptor() ([]byte, []int) {
-	return file_proto_token_v1_token_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *TrendingToken) GetToken() *Token {
-	if x != nil {
-		return x.Token
-	}
-	return nil
-}
-
-func (x *TrendingToken) GetMetrics() *TokenMetric {
-	if x != nil {
-		return x.Metrics
-	}
-	return nil
-}
-
-func (x *TrendingToken) GetTrendingScore() float64 {
-	if x != nil {
-		return x.TrendingScore
-	}
-	return 0
-}
-
-func (x *TrendingToken) GetTrendingReason() string {
-	if x != nil {
-		return x.TrendingReason
-	}
-	return ""
-}
-
-// PriceAlert represents a user-configured price alert
-type PriceAlert struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	UserId        string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	TokenAddress  string                 `protobuf:"bytes,3,opt,name=token_address,json=tokenAddress,proto3" json:"token_address,omitempty"`
-	Chain         string                 `protobuf:"bytes,4,opt,name=chain,proto3" json:"chain,omitempty"`
-	TargetPrice   float64                `protobuf:"fixed64,5,opt,name=target_price,json=targetPrice,proto3" json:"target_price,omitempty"`
-	Condition     string                 `protobuf:"bytes,6,opt,name=condition,proto3" json:"condition,omitempty"` // above, below, crosses
-	Active        bool                   `protobuf:"varint,7,opt,name=active,proto3" json:"active,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	TriggeredAt   *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=triggered_at,json=triggeredAt,proto3" json:"triggered_at,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *PriceAlert) Reset() {
-	*x = PriceAlert{}
-	mi := &file_proto_token_v1_token_proto_msgTypes[6]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *PriceAlert) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*PriceAlert) ProtoMessage() {}
-
-func (x *PriceAlert) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_token_v1_token_proto_msgTypes[6]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use PriceAlert.ProtoReflect.Descriptor instead.
-func (*PriceAlert) Descriptor() ([]byte, []int) {
-	return file_proto_token_v1_token_proto_rawDescGZIP(), []int{6}
-}
-
-func (x *PriceAlert) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
-}
-
-func (x *PriceAlert) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
-}
-
-func (x *PriceAlert) GetTokenAddress() string {
-	if x != nil {
-		return x.TokenAddress
-	}
-	return ""
-}
-
-func (x *PriceAlert) GetChain() string {
-	if x != nil {
-		return x.Chain
-	}
-	return ""
-}
-
-func (x *PriceAlert) GetTargetPrice() float64 {
-	if x != nil {
-		return x.TargetPrice
-	}
-	return 0
-}
-
-func (x *PriceAlert) GetCondition() string {
-	if x != nil {
-		return x.Condition
-	}
-	return ""
-}
-
-func (x *PriceAlert) GetActive() bool {
-	if x != nil {
-		return x.Active
-	}
-	return false
-}
-
-func (x *PriceAlert) GetCreatedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.CreatedAt
-	}
-	return nil
-}
-
-func (x *PriceAlert) GetTriggeredAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.TriggeredAt
-	}
-	return nil
-}
-
 // HealthCheckResponse is a simple message to indicate service health status.
 type HealthCheckResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -776,7 +162,7 @@ type HealthCheckResponse struct {
 
 func (x *HealthCheckResponse) Reset() {
 	*x = HealthCheckResponse{}
-	mi := &file_proto_token_v1_token_proto_msgTypes[7]
+	mi := &file_proto_token_v1_token_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -788,7 +174,7 @@ func (x *HealthCheckResponse) String() string {
 func (*HealthCheckResponse) ProtoMessage() {}
 
 func (x *HealthCheckResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_token_v1_token_proto_msgTypes[7]
+	mi := &file_proto_token_v1_token_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -801,7 +187,7 @@ func (x *HealthCheckResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthCheckResponse.ProtoReflect.Descriptor instead.
 func (*HealthCheckResponse) Descriptor() ([]byte, []int) {
-	return file_proto_token_v1_token_proto_rawDescGZIP(), []int{7}
+	return file_proto_token_v1_token_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *HealthCheckResponse) GetStatus() string {
@@ -842,7 +228,7 @@ type GetTokenRequest struct {
 
 func (x *GetTokenRequest) Reset() {
 	*x = GetTokenRequest{}
-	mi := &file_proto_token_v1_token_proto_msgTypes[8]
+	mi := &file_proto_token_v1_token_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -854,7 +240,7 @@ func (x *GetTokenRequest) String() string {
 func (*GetTokenRequest) ProtoMessage() {}
 
 func (x *GetTokenRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_token_v1_token_proto_msgTypes[8]
+	mi := &file_proto_token_v1_token_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -867,7 +253,7 @@ func (x *GetTokenRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTokenRequest.ProtoReflect.Descriptor instead.
 func (*GetTokenRequest) Descriptor() ([]byte, []int) {
-	return file_proto_token_v1_token_proto_rawDescGZIP(), []int{8}
+	return file_proto_token_v1_token_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *GetTokenRequest) GetId() string {
@@ -890,7 +276,7 @@ type ListTokensResponse struct {
 
 func (x *ListTokensResponse) Reset() {
 	*x = ListTokensResponse{}
-	mi := &file_proto_token_v1_token_proto_msgTypes[9]
+	mi := &file_proto_token_v1_token_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -902,7 +288,7 @@ func (x *ListTokensResponse) String() string {
 func (*ListTokensResponse) ProtoMessage() {}
 
 func (x *ListTokensResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_token_v1_token_proto_msgTypes[9]
+	mi := &file_proto_token_v1_token_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -915,7 +301,7 @@ func (x *ListTokensResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListTokensResponse.ProtoReflect.Descriptor instead.
 func (*ListTokensResponse) Descriptor() ([]byte, []int) {
-	return file_proto_token_v1_token_proto_rawDescGZIP(), []int{9}
+	return file_proto_token_v1_token_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *ListTokensResponse) GetTokens() []*Token {
@@ -960,7 +346,7 @@ type ListTokensRequest struct {
 
 func (x *ListTokensRequest) Reset() {
 	*x = ListTokensRequest{}
-	mi := &file_proto_token_v1_token_proto_msgTypes[10]
+	mi := &file_proto_token_v1_token_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -972,7 +358,7 @@ func (x *ListTokensRequest) String() string {
 func (*ListTokensRequest) ProtoMessage() {}
 
 func (x *ListTokensRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_token_v1_token_proto_msgTypes[10]
+	mi := &file_proto_token_v1_token_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -985,7 +371,7 @@ func (x *ListTokensRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListTokensRequest.ProtoReflect.Descriptor instead.
 func (*ListTokensRequest) Descriptor() ([]byte, []int) {
-	return file_proto_token_v1_token_proto_rawDescGZIP(), []int{10}
+	return file_proto_token_v1_token_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ListTokensRequest) GetChain() string {
@@ -1041,7 +427,7 @@ const file_proto_token_v1_token_proto_rawDesc = "" +
 	"\x04name\x18\x03 \x01(\tR\x04name\x12\x16\n" +
 	"\x06symbol\x18\x04 \x01(\tR\x06symbol\x12\x1a\n" +
 	"\bdecimals\x18\x05 \x01(\rR\bdecimals\x12!\n" +
-	"\ftotal_supply\x18\x06 \x01(\tR\vtotalSupply\x12\x14\n" +
+	"\ftotal_supply\x18\x06 \x01(\x01R\vtotalSupply\x12\x14\n" +
 	"\x05chain\x18\a \x01(\tR\x05chain\x129\n" +
 	"\n" +
 	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
@@ -1050,73 +436,7 @@ const file_proto_token_v1_token_proto_rawDesc = "" +
 	"\n" +
 	"deleted_at\x18\n" +
 	" \x01(\v2\x1a.google.protobuf.TimestampR\tdeletedAt\x12\x18\n" +
-	"\adeleted\x18\v \x01(\bR\adeleted\"\xca\x04\n" +
-	"\vTokenMetric\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
-	"\btoken_id\x18\x02 \x01(\tR\atokenId\x12#\n" +
-	"\rtoken_address\x18\x03 \x01(\tR\ftokenAddress\x12\x14\n" +
-	"\x05chain\x18\x04 \x01(\tR\x05chain\x12\x14\n" +
-	"\x05price\x18\x05 \x01(\x01R\x05price\x12(\n" +
-	"\x10price_change_24h\x18\x06 \x01(\x01R\x0epriceChange24h\x12&\n" +
-	"\x0fprice_change_7d\x18\a \x01(\x01R\rpriceChange7d\x12\x1d\n" +
-	"\n" +
-	"volume_24h\x18\b \x01(\x01R\tvolume24h\x12\x1d\n" +
-	"\n" +
-	"market_cap\x18\t \x01(\x01R\tmarketCap\x12\x18\n" +
-	"\aholders\x18\n" +
-	" \x01(\x03R\aholders\x12)\n" +
-	"\x10transactions_24h\x18\v \x01(\x03R\x0ftransactions24h\x12#\n" +
-	"\rliquidity_usd\x18\f \x01(\x01R\fliquidityUsd\x126\n" +
-	"\x17fully_diluted_valuation\x18\r \x01(\x01R\x15fullyDilutedValuation\x128\n" +
-	"\ttimestamp\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\x129\n" +
-	"\n" +
-	"deleted_at\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampR\tdeletedAt\x12\x18\n" +
-	"\adeleted\x18\x10 \x01(\bR\adeleted\"\xcd\x01\n" +
-	"\n" +
-	"PricePoint\x128\n" +
-	"\ttimestamp\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\x12\x12\n" +
-	"\x04open\x18\x02 \x01(\x01R\x04open\x12\x12\n" +
-	"\x04high\x18\x03 \x01(\x01R\x04high\x12\x10\n" +
-	"\x03low\x18\x04 \x01(\x01R\x03low\x12\x14\n" +
-	"\x05close\x18\x05 \x01(\x01R\x05close\x12\x16\n" +
-	"\x06volume\x18\x06 \x01(\x01R\x06volume\x12\x1d\n" +
-	"\n" +
-	"market_cap\x18\a \x01(\x01R\tmarketCap\"\x93\x01\n" +
-	"\x06Holder\x12\x18\n" +
-	"\aaddress\x18\x01 \x01(\tR\aaddress\x12\x18\n" +
-	"\abalance\x18\x02 \x01(\tR\abalance\x12\x1e\n" +
-	"\n" +
-	"percentage\x18\x03 \x01(\x01R\n" +
-	"percentage\x12\x14\n" +
-	"\x05label\x18\x04 \x01(\tR\x05label\x12\x1f\n" +
-	"\vis_contract\x18\x05 \x01(\bR\n" +
-	"isContract\"\x80\x02\n" +
-	"\vTransaction\x12\x12\n" +
-	"\x04hash\x18\x01 \x01(\tR\x04hash\x12\x12\n" +
-	"\x04from\x18\x02 \x01(\tR\x04from\x12\x0e\n" +
-	"\x02to\x18\x03 \x01(\tR\x02to\x12\x14\n" +
-	"\x05value\x18\x04 \x01(\tR\x05value\x128\n" +
-	"\ttimestamp\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\x12!\n" +
-	"\fblock_number\x18\x06 \x01(\x04R\vblockNumber\x12)\n" +
-	"\x10transaction_type\x18\a \x01(\tR\x0ftransactionType\x12\x1b\n" +
-	"\tvalue_usd\x18\b \x01(\x01R\bvalueUsd\"\xb7\x01\n" +
-	"\rTrendingToken\x12%\n" +
-	"\x05token\x18\x01 \x01(\v2\x0f.token.v1.TokenR\x05token\x12/\n" +
-	"\ametrics\x18\x02 \x01(\v2\x15.token.v1.TokenMetricR\ametrics\x12%\n" +
-	"\x0etrending_score\x18\x03 \x01(\x01R\rtrendingScore\x12'\n" +
-	"\x0ftrending_reason\x18\x04 \x01(\tR\x0etrendingReason\"\xc3\x02\n" +
-	"\n" +
-	"PriceAlert\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
-	"\auser_id\x18\x02 \x01(\tR\x06userId\x12#\n" +
-	"\rtoken_address\x18\x03 \x01(\tR\ftokenAddress\x12\x14\n" +
-	"\x05chain\x18\x04 \x01(\tR\x05chain\x12!\n" +
-	"\ftarget_price\x18\x05 \x01(\x01R\vtargetPrice\x12\x1c\n" +
-	"\tcondition\x18\x06 \x01(\tR\tcondition\x12\x16\n" +
-	"\x06active\x18\a \x01(\bR\x06active\x129\n" +
-	"\n" +
-	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12=\n" +
-	"\ftriggered_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\vtriggeredAt\"|\n" +
+	"\adeleted\x18\v \x01(\bR\adeleted\"|\n" +
 	"\x13HealthCheckResponse\x12\x16\n" +
 	"\x06status\x18\x01 \x01(\tR\x06status\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12!\n" +
@@ -1156,46 +476,32 @@ func file_proto_token_v1_token_proto_rawDescGZIP() []byte {
 	return file_proto_token_v1_token_proto_rawDescData
 }
 
-var file_proto_token_v1_token_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_proto_token_v1_token_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_proto_token_v1_token_proto_goTypes = []any{
 	(*Token)(nil),                 // 0: token.v1.Token
-	(*TokenMetric)(nil),           // 1: token.v1.TokenMetric
-	(*PricePoint)(nil),            // 2: token.v1.PricePoint
-	(*Holder)(nil),                // 3: token.v1.Holder
-	(*Transaction)(nil),           // 4: token.v1.Transaction
-	(*TrendingToken)(nil),         // 5: token.v1.TrendingToken
-	(*PriceAlert)(nil),            // 6: token.v1.PriceAlert
-	(*HealthCheckResponse)(nil),   // 7: token.v1.HealthCheckResponse
-	(*GetTokenRequest)(nil),       // 8: token.v1.GetTokenRequest
-	(*ListTokensResponse)(nil),    // 9: token.v1.ListTokensResponse
-	(*ListTokensRequest)(nil),     // 10: token.v1.ListTokensRequest
-	(*timestamppb.Timestamp)(nil), // 11: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),         // 12: google.protobuf.Empty
+	(*HealthCheckResponse)(nil),   // 1: token.v1.HealthCheckResponse
+	(*GetTokenRequest)(nil),       // 2: token.v1.GetTokenRequest
+	(*ListTokensResponse)(nil),    // 3: token.v1.ListTokensResponse
+	(*ListTokensRequest)(nil),     // 4: token.v1.ListTokensRequest
+	(*timestamppb.Timestamp)(nil), // 5: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),         // 6: google.protobuf.Empty
 }
 var file_proto_token_v1_token_proto_depIdxs = []int32{
-	11, // 0: token.v1.Token.created_at:type_name -> google.protobuf.Timestamp
-	11, // 1: token.v1.Token.updated_at:type_name -> google.protobuf.Timestamp
-	11, // 2: token.v1.Token.deleted_at:type_name -> google.protobuf.Timestamp
-	11, // 3: token.v1.TokenMetric.timestamp:type_name -> google.protobuf.Timestamp
-	11, // 4: token.v1.TokenMetric.deleted_at:type_name -> google.protobuf.Timestamp
-	11, // 5: token.v1.PricePoint.timestamp:type_name -> google.protobuf.Timestamp
-	11, // 6: token.v1.Transaction.timestamp:type_name -> google.protobuf.Timestamp
-	0,  // 7: token.v1.TrendingToken.token:type_name -> token.v1.Token
-	1,  // 8: token.v1.TrendingToken.metrics:type_name -> token.v1.TokenMetric
-	11, // 9: token.v1.PriceAlert.created_at:type_name -> google.protobuf.Timestamp
-	11, // 10: token.v1.PriceAlert.triggered_at:type_name -> google.protobuf.Timestamp
-	0,  // 11: token.v1.ListTokensResponse.tokens:type_name -> token.v1.Token
-	12, // 12: token.v1.TokenService.HealthCheck:input_type -> google.protobuf.Empty
-	8,  // 13: token.v1.TokenService.GetTokenById:input_type -> token.v1.GetTokenRequest
-	10, // 14: token.v1.TokenService.ListTokens:input_type -> token.v1.ListTokensRequest
-	7,  // 15: token.v1.TokenService.HealthCheck:output_type -> token.v1.HealthCheckResponse
-	0,  // 16: token.v1.TokenService.GetTokenById:output_type -> token.v1.Token
-	9,  // 17: token.v1.TokenService.ListTokens:output_type -> token.v1.ListTokensResponse
-	15, // [15:18] is the sub-list for method output_type
-	12, // [12:15] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	5, // 0: token.v1.Token.created_at:type_name -> google.protobuf.Timestamp
+	5, // 1: token.v1.Token.updated_at:type_name -> google.protobuf.Timestamp
+	5, // 2: token.v1.Token.deleted_at:type_name -> google.protobuf.Timestamp
+	0, // 3: token.v1.ListTokensResponse.tokens:type_name -> token.v1.Token
+	6, // 4: token.v1.TokenService.HealthCheck:input_type -> google.protobuf.Empty
+	2, // 5: token.v1.TokenService.GetTokenById:input_type -> token.v1.GetTokenRequest
+	4, // 6: token.v1.TokenService.ListTokens:input_type -> token.v1.ListTokensRequest
+	1, // 7: token.v1.TokenService.HealthCheck:output_type -> token.v1.HealthCheckResponse
+	0, // 8: token.v1.TokenService.GetTokenById:output_type -> token.v1.Token
+	3, // 9: token.v1.TokenService.ListTokens:output_type -> token.v1.ListTokensResponse
+	7, // [7:10] is the sub-list for method output_type
+	4, // [4:7] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_proto_token_v1_token_proto_init() }
@@ -1209,7 +515,7 @@ func file_proto_token_v1_token_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_token_v1_token_proto_rawDesc), len(file_proto_token_v1_token_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   11,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
