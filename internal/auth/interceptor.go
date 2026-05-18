@@ -32,7 +32,15 @@ func UnaryInterceptor(v *Validator) grpc.UnaryServerInterceptor {
 			return nil, status.Error(codes.Unauthenticated, "missing authorization")
 		}
 
-		token := strings.TrimPrefix(authHeaders[0], "Bearer ")
+		authHeader := authHeaders[0]
+		if !strings.HasPrefix(authHeader, "Bearer ") {
+			return nil, status.Error(
+				codes.Unauthenticated,
+				"invalid authorization header",
+			)
+		}
+
+		token := strings.TrimPrefix(authHeader, "Bearer ")
 
 		claims, err := v.Validate(token)
 		if err != nil {
