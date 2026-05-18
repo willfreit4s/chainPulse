@@ -3,6 +3,7 @@ package configs
 import (
 	"strings"
 
+	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
 
@@ -21,11 +22,18 @@ type conf struct {
 	ServiceName    string
 	Environment    string
 	ServiceVersion string
+
+	// Auth configuration
+	Auth0Domain   string
+	Auth0Audience string
 }
 
 type Config = conf
 
 func LoadConfig() (*conf, error) {
+	// Load .env file if it exists
+	_ = godotenv.Load()
+
 	v := viper.New()
 
 	// Defaults
@@ -40,6 +48,8 @@ func LoadConfig() (*conf, error) {
 	v.SetDefault("SERVICE_NAME", "chainpulse-api")
 	v.SetDefault("SERVICE_VERSION", "1.0.0")
 	v.SetDefault("ENVIRONMENT", "local")
+	v.SetDefault("AUTH0_DOMAIN", "your_domain")
+	v.SetDefault("AUTH0_AUDIENCE", "your_audience")
 
 	v.AutomaticEnv()
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
@@ -59,6 +69,8 @@ func LoadConfig() (*conf, error) {
 		ServiceName:    v.GetString("SERVICE_NAME"),
 		ServiceVersion: v.GetString("SERVICE_VERSION"),
 		Environment:    v.GetString("ENVIRONMENT"),
+		Auth0Domain:    v.GetString("AUTH0_DOMAIN"),
+		Auth0Audience:  v.GetString("AUTH0_AUDIENCE"),
 	}
 
 	return cfg, nil
