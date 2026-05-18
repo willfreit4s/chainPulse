@@ -15,6 +15,7 @@ import (
 	"github.com/rs/cors"
 	"github.com/willfreit4s/chainPulse/configs"
 	"github.com/willfreit4s/chainPulse/internal/app"
+	"github.com/willfreit4s/chainPulse/internal/auth"
 	tokenv1 "github.com/willfreit4s/chainPulse/internal/infra/grpc/pb/proto/token/v1"
 	"github.com/willfreit4s/chainPulse/pkg/database"
 	"github.com/willfreit4s/chainPulse/pkg/logger"
@@ -43,7 +44,7 @@ func main() {
 
 	container := app.NewContainer(cfg, db)
 	tokenSvc := container.TokenService
-	grpcServer := initGRPCServer(tokenSvc, log)
+	grpcServer := initGRPCServer(tokenSvc, log, cfg)
 
 	gateway, err := initGateway(ctx, tokenSvc)
 	if err != nil {
@@ -89,9 +90,18 @@ func main() {
 	log.Info().Msg("shutdown completed")
 }
 
-func initGRPCServer(tokenSvc tokenv1.TokenServiceServer, log *logger.Logger) *grpc.Server {
+func initGRPCServer(tokenSvc tokenv1.TokenServiceServer, log *logger.Logger, cfg *configs.Config) *grpc.Server {
+	validator, err := auth.NewValidator(cfg.Auth0Domain, cfg.Auth0Audience)
+	if err != nil {
+		log.Error().Err(err).Msg("auth validator initialization failed")
+		panic(err)
+	}
+
 	grpcServer := grpc.NewServer(
-		grpc.UnaryInterceptor(logger.LoggerInterceptor(log)),
+		grpc.ChainUnaryInterceptor(
+			auth.UnaryInterceptor(validator),
+			logger.LoggerInterceptor(log),
+		),
 	)
 	tokenv1.RegisterTokenServiceServer(grpcServer, tokenSvc)
 	reflection.Register(grpcServer)
