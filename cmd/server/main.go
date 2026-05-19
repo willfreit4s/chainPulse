@@ -44,7 +44,13 @@ func main() {
 
 	container := app.NewContainer(cfg, db)
 	tokenSvc := container.TokenService
-	grpcServer := initGRPCServer(tokenSvc, log, cfg)
+	validator, err := auth.NewValidator(cfg.Auth0Domain, cfg.Auth0Audience)
+	if err != nil {
+		log.Error().Err(err).Msg("auth validator initialization failed")
+		panic(err)
+	}
+
+	grpcServer := initGRPCServer(tokenSvc, log, validator)
 
 	gateway, err := initGateway(ctx, tokenSvc)
 	if err != nil {
@@ -52,7 +58,7 @@ func main() {
 		panic(err)
 	}
 
-	httpServer := initHTTPServer(cfg, log, grpcServer, gateway)
+	httpServer := initHTTPServer(cfg, log, grpcServer, gateway, validator)
 
 	errCh := make(chan error, 1)
 	go func() {
@@ -90,13 +96,7 @@ func main() {
 	log.Info().Msg("shutdown completed")
 }
 
-func initGRPCServer(tokenSvc tokenv1.TokenServiceServer, log *logger.Logger, cfg *configs.Config) *grpc.Server {
-	validator, err := auth.NewValidator(cfg.Auth0Domain, cfg.Auth0Audience)
-	if err != nil {
-		log.Error().Err(err).Msg("auth validator initialization failed")
-		panic(err)
-	}
-
+func initGRPCServer(tokenSvc tokenv1.TokenServiceServer, log *logger.Logger, validator *auth.Validator) *grpc.Server {
 	grpcServer := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
 			auth.UnaryInterceptor(validator),
@@ -147,8 +147,10 @@ func initHTTPServer(
 	log *logger.Logger,
 	grpcServer *grpc.Server,
 	handler http.Handler,
+	validator *auth.Validator,
 ) *http.Server {
 
+	handler = auth.Middleware(validator, "/v1/health")(handler)
 	handler = logger.Middleware(log)(handler)
 	handler = applyCORS(handler)
 
