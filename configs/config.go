@@ -48,8 +48,8 @@ func LoadConfig() (*conf, error) {
 	v.SetDefault("SERVICE_NAME", "chainpulse-api")
 	v.SetDefault("SERVICE_VERSION", "1.0.0")
 	v.SetDefault("ENVIRONMENT", "local")
-	v.SetDefault("AUTH0_DOMAIN", "your_domain")
-	v.SetDefault("AUTH0_AUDIENCE", "your_audience")
+	v.SetDefault("AUTH0_DOMAIN", "")
+	v.SetDefault("AUTH0_AUDIENCE", "")
 
 	v.AutomaticEnv()
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
