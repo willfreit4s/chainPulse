@@ -15,6 +15,14 @@ type Validator struct {
 }
 
 func NewValidator(domain, audience string) (*Validator, error) {
+	if domain == "" {
+		return nil, fmt.Errorf("domain is required")
+	}
+
+	if audience == "" {
+		return nil, fmt.Errorf("audience is required")
+	}
+
 	jwksURL := fmt.Sprintf(
 		"https://%s/.well-known/jwks.json",
 		domain,
@@ -57,15 +65,49 @@ func (v *Validator) Validate(tokenString string) (*Claims, error) {
 		return nil, fmt.Errorf("invalid claims")
 	}
 
-	if nbf, err := claimsMap.GetNotBefore(); err == nil {
+	if _, ok := claimsMap["nbf"]; ok {
+		nbf, err := claimsMap.GetNotBefore()
+		if err != nil {
+			return nil, fmt.Errorf("invalid nbf claim: %w", err)
+		}
+
 		if time.Now().Before(nbf.Time) {
 			return nil, fmt.Errorf("token not active yet")
 		}
 	}
 
+	subject, err := claimString(claimsMap, "sub")
+	if err != nil {
+		return nil, err
+	}
+
+	scope, err := claimString(claimsMap, "scope")
+	if err != nil {
+		return nil, err
+	}
+
+	issuer, err := claimString(claimsMap, "iss")
+	if err != nil {
+		return nil, err
+	}
+
 	return &Claims{
-		Subject: claimsMap["sub"].(string),
-		Scope:   claimsMap["scope"].(string),
-		Issuer:  claimsMap["iss"].(string),
+		Subject: subject,
+		Scope:   scope,
+		Issuer:  issuer,
 	}, nil
+}
+
+func claimString(claimsMap jwt.MapClaims, key string) (string, error) {
+	value, ok := claimsMap[key]
+	if !ok {
+		return "", fmt.Errorf("missing %s claim", key)
+	}
+
+	claim, ok := value.(string)
+	if !ok {
+		return "", fmt.Errorf("invalid %s claim", key)
+	}
+
+	return claim, nil
 }
