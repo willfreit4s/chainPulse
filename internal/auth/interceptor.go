@@ -3,7 +3,6 @@ package auth
 import (
 	"context"
 
-	"github.com/willfreit4s/chainPulse/pkg/logger"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -17,8 +16,6 @@ func UnaryInterceptor(v *Validator) grpc.UnaryServerInterceptor {
 		info *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
-		log := logger.FromContext(ctx)
-
 		if info.FullMethod == "/token.v1.TokenService/HealthCheck" {
 			return handler(ctx, req)
 		}
@@ -35,8 +32,7 @@ func UnaryInterceptor(v *Validator) grpc.UnaryServerInterceptor {
 
 		claims, err := AuthenticateBearerToken(v, authHeaders[0])
 		if err != nil {
-			log.Error().Err(err).Msg("token validation failed")
-			return nil, status.Error(codes.Unauthenticated, "unauthenticated")
+			return nil, status.Error(codes.Unauthenticated, err.Error())
 		}
 
 		ctx = WithClaims(ctx, claims)
