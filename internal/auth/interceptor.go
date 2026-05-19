@@ -32,7 +32,7 @@ func UnaryInterceptor(v *Validator) grpc.UnaryServerInterceptor {
 
 		claims, err := AuthenticateBearerToken(v, authHeaders[0])
 		if err != nil {
-			return nil, status.Error(codes.Unauthenticated, err.Error())
+			return nil, status.Error(codes.Unauthenticated, "unauthenticated")
 		}
 
 		ctx = WithClaims(ctx, claims)
