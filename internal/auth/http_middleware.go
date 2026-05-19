@@ -1,21 +1,21 @@
 package auth
 
 import (
+	"errors"
 	"net/http"
 	"strings"
-
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
+
+var errInvalidAuthorizationHeader = errors.New("invalid authorization header")
 
 func AuthenticateBearerToken(v *Validator, authHeader string) (*Claims, error) {
 	if !strings.HasPrefix(authHeader, "Bearer ") {
-		return nil, status.Error(codes.Unauthenticated, "invalid authorization header")
+		return nil, errInvalidAuthorizationHeader
 	}
 
 	token := strings.TrimPrefix(authHeader, "Bearer ")
 	if token == "" {
-		return nil, status.Error(codes.Unauthenticated, "invalid authorization header")
+		return nil, errInvalidAuthorizationHeader
 	}
 
 	return v.Validate(token)
@@ -41,7 +41,7 @@ func Middleware(v *Validator, publicPaths ...string) func(http.Handler) http.Han
 
 			claims, err := AuthenticateBearerToken(v, r.Header.Get("Authorization"))
 			if err != nil {
-				http.Error(w, "unauthorized", http.StatusUnauthorized)
+				http.Error(w, err.Error(), http.StatusUnauthorized)
 				return
 			}
 
